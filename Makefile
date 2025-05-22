@@ -11,5 +11,28 @@ openapi-codegen:
 
 codegen: deepcopy-codegen conversion-codegen openapi-codegen
 
+init:
+	openssl req -nodes -new -x509 -keyout ca.key -out ca.crt
+	openssl req -out client.csr -new -newkey rsa:4096 -nodes -keyout client.key -subj "/CN=development/O=system:masters"
+	openssl x509 -req -days 365 -in client.csr -CA ca.crt -CAkey ca.key -set_serial 01 -sha256 -out client.crt
+	openssl pkcs12 -export -in ./client.crt -inkey ./client.key -out client.p12 -passout pass:password
+
+test:
+	curl -fv -k --cert-type P12 --cert client.p12:password \
+   https://localhost:8443/apis/wardle.example.com/v1alpha1/namespaces/default/flunders
+
+test-mac:
+	brew install httpie
+	http --verify=no --cert client.crt --cert-key client.key \
+   	https://localhost:8443/apis/wardle.example.com/v1alpha1/namespaces/default/flunders
+
 run:
-	go run main.go --etcd-servers localhost:2379 --kubeconfig ~/.kube/config --authentication-kubeconfig ~/.kube/config --authorization-kubeconfig ~/.kube/config
+	go run main.go --secure-port 8443 \
+	--etcd-servers localhost:2379 \
+	--v=7 \
+	--client-ca-file ca.crt \
+	--kubeconfig ~/.kube/config \
+	--authentication-kubeconfig ~/.kube/config \
+	--authorization-kubeconfig ~/.kube/config
+
+

@@ -14,4 +14,4 @@ openapi-gen -v 2 \
     --output-package k8s.io/openapi
 
 mv k8s.io/openapi/zz_generated_openapi.go pkg/generated/openapi/zz_generated.openapi.go
-rm -rf k8s.io/openapi
+rm -rf k8s.io
