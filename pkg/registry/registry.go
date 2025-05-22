@@ -39,8 +39,10 @@ func RESTInPeace(storage *REST, err error) *REST {
 	return storage
 }
 
-// RESTInPeaceSubResource 用于子资源的注册
-// 它接受任何实现了 rest.Storage 接口的对象
-func RESTInPeaceSubResource(storage rest.Storage) rest.Storage {
+func MustNewRestStorage(f func() (rest.Storage, error)) rest.Storage {
+	storage, err := f()
+	if err != nil {
+		panic(err)
+	}
 	return storage
 }

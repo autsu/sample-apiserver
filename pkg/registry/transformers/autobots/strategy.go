@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -19,11 +20,34 @@ var (
 	_ rest.RESTCreateStrategy = &autobotsStrategy{}
 	_ rest.RESTUpdateStrategy = &autobotsStrategy{}
 	_ rest.RESTDeleteStrategy = &autobotsStrategy{}
+	_ rest.Creater            = &autobotsStrategy{}
+	_ rest.Updater            = &autobotsStrategy{}
+	_ rest.Getter             = &autobotsStrategy{}
 )
 
 type autobotsStrategy struct {
 	runtime.ObjectTyper
 	names.NameGenerator
+}
+
+// Get implements rest.Getter.
+func (o *autobotsStrategy) Get(ctx context.Context, name string, options *v1.GetOptions) (runtime.Object, error) {
+	panic("unimplemented")
+}
+
+// Update implements rest.Updater.
+func (o *autobotsStrategy) Update(ctx context.Context, name string, objInfo rest.UpdatedObjectInfo, createValidation rest.ValidateObjectFunc, updateValidation rest.ValidateObjectUpdateFunc, forceAllowCreate bool, options *v1.UpdateOptions) (runtime.Object, bool, error) {
+	panic("unimplemented")
+}
+
+// Create implements rest.Creater.
+func (o *autobotsStrategy) Create(ctx context.Context, obj runtime.Object, createValidation rest.ValidateObjectFunc, options *v1.CreateOptions) (runtime.Object, error) {
+	panic("unimplemented")
+}
+
+// New implements rest.Creater.
+func (o *autobotsStrategy) New() runtime.Object {
+	panic("unimplemented")
 }
 
 // AllowCreateOnUpdate implements rest.RESTUpdateStrategy.

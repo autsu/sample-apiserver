@@ -22,10 +22,8 @@ test:
    https://localhost:8443/apis/wardle.example.com/v1alpha1/namespaces/default/flunders
 
 test-mac:
-	brew install httpie
-	http --verify=no --cert client.crt --cert-key client.key \
-   	https://localhost:8443/apis/wardle.example.com/v1alpha1/namespaces/default/flunders
-
+	./hack/test.sh
+	
 run:
 	go run main.go --secure-port 8443 \
 	--etcd-servers localhost:2379 \

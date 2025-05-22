@@ -27,6 +27,7 @@ import (
 
 	"k8s.io/sample-apiserver/pkg/apis/transformers"
 	transformersinstall "k8s.io/sample-apiserver/pkg/apis/transformers/install"
+
 	//"k8s.io/sample-apiserver/pkg/apis/wardle"
 	//"k8s.io/sample-apiserver/pkg/apis/wardle/install"
 	"k8s.io/sample-apiserver/pkg/registry"
@@ -121,7 +122,10 @@ func (c completedConfig) New() (*WardleServer, error) {
 	// v1alpha1storage["flunders"] = registry.RESTInPeace(flunderstorage.NewREST(Scheme, c.GenericConfig.RESTOptionsGetter))
 	// v1alpha1storage["fischers"] = registry.RESTInPeace(fischerstorage.NewREST(Scheme, c.GenericConfig.RESTOptionsGetter))
 
-	v1alpha1storage["autobots"] = registry.RESTInPeace(autobotstorage.NewREST(Scheme, c.GenericConfig.RESTOptionsGetter))
+	v1alpha1storage["autobots"] = registry.MustNewRestStorage(func() (rest.Storage, error) {
+		//return autobotstorage.NewREST(Scheme, c.GenericConfig.RESTOptionsGetter)
+		return &autobotstorage.FakeREST{}, nil
+	})
 	// v1alpha1storage["autobots/transform"] = transformers.NewTransformerREST()
 	// v1alpha1storage["autobots/status"] = autobotstatusREST
 	// v1alpha1storage["autobots/scan"] = autobotstatsREST
