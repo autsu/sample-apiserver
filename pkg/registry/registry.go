@@ -20,6 +20,7 @@ import (
 	"fmt"
 
 	genericregistry "k8s.io/apiserver/pkg/registry/generic/registry"
+	"k8s.io/apiserver/pkg/registry/rest"
 )
 
 // REST implements a RESTStorage for API services against etcd
@@ -35,5 +36,11 @@ func RESTInPeace(storage *REST, err error) *REST {
 		err = fmt.Errorf("unable to create REST storage for a resource due to %v, will die", err)
 		panic(err)
 	}
+	return storage
+}
+
+// RESTInPeaceSubResource 用于子资源的注册
+// 它接受任何实现了 rest.Storage 接口的对象
+func RESTInPeaceSubResource(storage rest.Storage) rest.Storage {
 	return storage
 }

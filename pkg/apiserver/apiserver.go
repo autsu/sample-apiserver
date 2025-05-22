@@ -25,11 +25,16 @@ import (
 	"k8s.io/apiserver/pkg/registry/rest"
 	genericapiserver "k8s.io/apiserver/pkg/server"
 
-	"k8s.io/sample-apiserver/pkg/apis/wardle"
-	"k8s.io/sample-apiserver/pkg/apis/wardle/install"
-	wardleregistry "k8s.io/sample-apiserver/pkg/registry"
-	fischerstorage "k8s.io/sample-apiserver/pkg/registry/wardle/fischer"
-	flunderstorage "k8s.io/sample-apiserver/pkg/registry/wardle/flunder"
+	"k8s.io/sample-apiserver/pkg/apis/transformers"
+	transformersinstall "k8s.io/sample-apiserver/pkg/apis/transformers/install"
+	//"k8s.io/sample-apiserver/pkg/apis/wardle"
+	//"k8s.io/sample-apiserver/pkg/apis/wardle/install"
+	"k8s.io/sample-apiserver/pkg/registry"
+	autobotstorage "k8s.io/sample-apiserver/pkg/registry/transformers/autobots"
+	//fischerstorage "k8s.io/sample-apiserver/pkg/registry/wardle/fischer"
+	//flunderstorage "k8s.io/sample-apiserver/pkg/registry/wardle/flunder"
+	//decepticonstorage "k8s.io/sample-apiserver/pkg/registry/decepticons"
+	//"k8s.io/sample-apiserver/pkg/registry/transformers"
 )
 
 var (
@@ -41,8 +46,8 @@ var (
 )
 
 func init() {
-	install.Install(Scheme)
-
+	// install.Install(Scheme)
+	transformersinstall.Install(Scheme)
 	// we need to add the options to empty v1
 	// TODO fix the server code to avoid this
 	metav1.AddToGroupVersion(Scheme, schema.GroupVersion{Version: "v1"})
@@ -110,15 +115,25 @@ func (c completedConfig) New() (*WardleServer, error) {
 		GenericAPIServer: genericServer,
 	}
 
-	apiGroupInfo := genericapiserver.NewDefaultAPIGroupInfo(wardle.GroupName, Scheme, metav1.ParameterCodec, Codecs)
+	apiGroupInfo := genericapiserver.NewDefaultAPIGroupInfo(transformers.GroupName, Scheme, metav1.ParameterCodec, Codecs)
 
 	v1alpha1storage := map[string]rest.Storage{}
-	v1alpha1storage["flunders"] = wardleregistry.RESTInPeace(flunderstorage.NewREST(Scheme, c.GenericConfig.RESTOptionsGetter))
-	v1alpha1storage["fischers"] = wardleregistry.RESTInPeace(fischerstorage.NewREST(Scheme, c.GenericConfig.RESTOptionsGetter))
+	// v1alpha1storage["flunders"] = registry.RESTInPeace(flunderstorage.NewREST(Scheme, c.GenericConfig.RESTOptionsGetter))
+	// v1alpha1storage["fischers"] = registry.RESTInPeace(fischerstorage.NewREST(Scheme, c.GenericConfig.RESTOptionsGetter))
+
+	v1alpha1storage["autobots"] = registry.RESTInPeace(autobotstorage.NewREST(Scheme, c.GenericConfig.RESTOptionsGetter))
+	// v1alpha1storage["autobots/transform"] = transformers.NewTransformerREST()
+	// v1alpha1storage["autobots/status"] = autobotstatusREST
+	// v1alpha1storage["autobots/scan"] = autobotstatsREST
+	// v1alpha1storage["autobots/repair"] = autobotscanstatusREST
+	// v1alpha1storage["autobots/battle"] = autobotbattleREST
+
+	// v1alpha1storage["decepticons"] = decepticonstorage.NewREST(Scheme, c.GenericConfig.RESTOptionsGetter)
+
 	apiGroupInfo.VersionedResourcesStorageMap["v1alpha1"] = v1alpha1storage
 
 	v1beta1storage := map[string]rest.Storage{}
-	v1beta1storage["flunders"] = wardleregistry.RESTInPeace(flunderstorage.NewREST(Scheme, c.GenericConfig.RESTOptionsGetter))
+	// v1beta1storage["flunders"] = wardleregistry.RESTInPeace(flunderstorage.NewREST(Scheme, c.GenericConfig.RESTOptionsGetter))
 	apiGroupInfo.VersionedResourcesStorageMap["v1beta1"] = v1beta1storage
 
 	if err := s.GenericAPIServer.InstallAPIGroup(&apiGroupInfo); err != nil {
