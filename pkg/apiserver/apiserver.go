@@ -36,6 +36,7 @@ import (
 	//flunderstorage "k8s.io/sample-apiserver/pkg/registry/wardle/flunder"
 	//decepticonstorage "k8s.io/sample-apiserver/pkg/registry/decepticons"
 	//"k8s.io/sample-apiserver/pkg/registry/transformers"
+	transform "k8s.io/sample-apiserver/pkg/registry/transformers/transform"
 )
 
 var (
@@ -119,12 +120,15 @@ func (c completedConfig) New() (*WardleServer, error) {
 	apiGroupInfo := genericapiserver.NewDefaultAPIGroupInfo(transformers.GroupName, Scheme, metav1.ParameterCodec, Codecs)
 
 	v1alpha1storage := map[string]rest.Storage{}
-	// v1alpha1storage["flunders"] = registry.RESTInPeace(flunderstorage.NewREST(Scheme, c.GenericConfig.RESTOptionsGetter))
-	// v1alpha1storage["fischers"] = registry.RESTInPeace(fischerstorage.NewREST(Scheme, c.GenericConfig.RESTOptionsGetter))
 
 	v1alpha1storage["autobots"] = registry.MustNewRestStorage(func() (rest.Storage, error) {
 		//return autobotstorage.NewREST(Scheme, c.GenericConfig.RESTOptionsGetter)
 		return &autobotstorage.FakeREST{}, nil
+	})
+	// 子资源
+	v1alpha1storage["autobots/transform"] = registry.MustNewRestStorage(func() (rest.Storage, error) {
+		//return autobotstorage.NewREST(Scheme, c.GenericConfig.RESTOptionsGetter)
+		return &transform.REST{}, nil
 	})
 	// v1alpha1storage["autobots/transform"] = transformers.NewTransformerREST()
 	// v1alpha1storage["autobots/status"] = autobotstatusREST
@@ -137,7 +141,6 @@ func (c completedConfig) New() (*WardleServer, error) {
 	apiGroupInfo.VersionedResourcesStorageMap["v1alpha1"] = v1alpha1storage
 
 	v1beta1storage := map[string]rest.Storage{}
-	// v1beta1storage["flunders"] = wardleregistry.RESTInPeace(flunderstorage.NewREST(Scheme, c.GenericConfig.RESTOptionsGetter))
 	apiGroupInfo.VersionedResourcesStorageMap["v1beta1"] = v1beta1storage
 
 	if err := s.GenericAPIServer.InstallAPIGroup(&apiGroupInfo); err != nil {

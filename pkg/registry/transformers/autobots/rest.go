@@ -25,9 +25,7 @@ var (
 	_ rest.Watcher = &REST{}
 )
 
-type REST struct {
-	//*genericregistry.Store
-}
+type REST struct{}
 
 // Watch implements rest.Watcher.
 func (r *REST) Watch(ctx context.Context, options *internalversion.ListOptions) (watch.Interface, error) {
@@ -46,8 +44,7 @@ func (r *REST) List(ctx context.Context, options *internalversion.ListOptions) (
 
 // NewList implements rest.Lister.
 func (r *REST) NewList() runtime.Object {
-	return &transformers.AutobotList{
-	}
+	return &transformers.AutobotList{}
 }
 
 // Get implements rest.Getter.
@@ -111,5 +108,5 @@ func NewREST(scheme *runtime.Scheme, optsGetter generic.RESTOptionsGetter) (*RES
 	}
 
 	return &REST{}, nil
-	//return &registry.REST{Store: store}, nil
+	// return &registry.REST{Store: store}, nil
 }
